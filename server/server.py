@@ -61,6 +61,9 @@ class app():
         self.request['method'] = self._environ['REQUEST_METHOD']
         self.request['data'] = {}
         line = self._environ['QUERY_STRING']
+        for data_pair in environ['wsgi.input'].read().split('&'):
+            key,value=data_pair.split('=')
+            self.request['data'][key]=value
 
     def parse(self):
         for url_handler in urls:
