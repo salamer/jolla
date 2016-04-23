@@ -19,4 +19,4 @@ you will see the magic happen!
 
 Copyright © 2016 by Aljun
 
-Under MIT license : [rem.mit-license.org](rem.mit-license.org)
+Under Apache license : [http://www.apache.org/licenses/](http://www.apache.org/licenses/)
