@@ -6,9 +6,26 @@ jolla is a pure API server framework,and it based on the gevent.
 
 ##QUICKSTART
 
-    cd server
+add a `app.py`,and write dowm:
 
-    python server
+    from jolla import server
+    from jolla import plugins
+
+    def index():
+        return plugins.render('templates/index.html')
+
+    class app(server.WebApp):
+        urls=[
+            (r'/',index)
+        ]
+
+    if __name__=='__main__':
+        server=server.jolla_server(app)
+        server.run_server()
+
+and then,run:
+
+    python app.py
 
 and open the http://127.0.0.1:8000 on your browser
 
