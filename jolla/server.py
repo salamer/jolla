@@ -10,9 +10,9 @@ from plugins import render_media
 class WebApp():
 
     urls = []
-    setting={
-        'statics':r'/statics',
-        'templates':r'/templates'
+    setting = {
+        'statics': r'/statics',
+        'templates': r'/templates'
     }
 
     def __init__(self, environ):
@@ -41,10 +41,11 @@ class WebApp():
                     html_code = url_handler[1](self.request)
 
             if self.setting['statics'] in self._environ['PATH_INFO']:
-                path=self._environ['PATH_INFO'].replace(self.setting['statics'],'')
-    
+                path = self._environ['PATH_INFO'].replace(
+                    self.setting['statics'], '')
+
                 try:
-                    res=render_media(path)
+                    res = render_media(path)
                 except IOError:
                     raise HTTP404Error("NOT FOUND THIS FILE")
                 return res
@@ -77,7 +78,7 @@ class jolla_server(WSGIServer):
 
         header = [
             ('Content-Type', 'text/html'),
-            ('Server','Jolla/1.0')
+            ('Server', 'Jolla/1.0')
         ]
 
         start_response(status, header)

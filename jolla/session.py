@@ -2,23 +2,26 @@
 
 class buffer(object):
 
-    def __init__(self,value):
-        self.data={}
+    def __init__(self):
+        self._data = {}
 
-class SessionError(object):
+
+class SessionError(Exception):
+
     def __str__(self):
         return "NO SUCH SESSION"
 
+
 class session(buffer):
 
-    def add_session(self,key,value):
-        self.data[key]=value
+    def add_value(self, key, value):
+        self._data[key] = value
         return True
 
-    def check_session(self,key,value=None):
-        if key in data.keys():
+    def check_value(self, key, value=None):
+        if key in self._data.keys():
             if value:
-                if data[key]==value:
+                if self._data[key] == value:
                     return True
                 else:
                     return False
@@ -27,15 +30,15 @@ class session(buffer):
         else:
             return False
 
-    def del_session(self,key):
-        if key in data.keys():
-            del data[key]
+    def del_value(self, key):
+        if key in self._data.keys():
+            del self._data[key]
             return True
         else:
             raise SessionError
 
-    def get_session(self,key):
-        if key in data.keys():
-            return data[key]
+    def get_value(self, key):
+        if key in self._data.keys():
+            return self._data[key]
         else:
             raise SessionError
