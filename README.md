@@ -35,19 +35,26 @@ def get(request):
         raise HTTP404Error
     return data
 
+def blog(request):
+    if request['method']=='GET':
+        return plugins.render_json({'name':session.get_value('name')})
+    else:
+        if request['method']=='POST':
+            session.add_value('name',request['data']['name'])
+            return 'ok'
 
 class app(server.WebApp):
     urls = [
         (r'/', index),
         (r'/data', data),
         (r'/add', add),
-        (r'/get', get)
+        (r'/get', get),
+        (r'/blog',blog)
     ]
 
 if __name__ == '__main__':
     server = server.jolla_server(app)
     server.run_server()
-
 ```
 
 and then,run:
