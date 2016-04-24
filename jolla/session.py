@@ -33,3 +33,9 @@ class session(buffer):
             return True
         else:
             raise SessionError
+
+    def get_session(self,key):
+        if key in data.keys():
+            return data[key]
+        else:
+            raise SessionError
