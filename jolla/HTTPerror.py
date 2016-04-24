@@ -4,7 +4,7 @@ class HTTPError(Exception):
     error_code=None
     def __init__(self,info=None):
         self.info=info
-        print self.info
+        print '<'+self.info+'>'
 
 
 
@@ -19,3 +19,9 @@ class HTTP502Error(HTTPError):
 
     def __str__(self):
         return "502 SERVER ERROR"
+
+class HTTP403Error(HTTPError):
+    error_code=403
+
+    def __str__(self):
+        return "403 FORBBIDEN"
