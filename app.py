@@ -1,11 +1,9 @@
 from jolla import server
 from jolla import plugins
 
-import pandas as pd
-
 
 def index(request):
-    return plugins.render('templates/index.html')
+    return plugins.render('index.html')
 
 
 def data(request):

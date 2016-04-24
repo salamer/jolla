@@ -3,11 +3,17 @@ gevent.monkey.patch_all()
 
 from gevent.pywsgi import WSGIServer
 import re
-from HTTPerror import HTTP404Error,HTTP403Error
+from HTTPerror import HTTP404Error, HTTP403Error
+from plugins import render_media
+
 
 class WebApp():
 
     urls = []
+    setting={
+        'statics':r'/statics',
+        'templates':r'/templates'
+    }
 
     def __init__(self, environ):
 
@@ -34,6 +40,15 @@ class WebApp():
                 else:
                     html_code = url_handler[1](self.request)
 
+            if self.setting['statics'] in self._environ['PATH_INFO']:
+                path=self._environ['PATH_INFO'].replace(self.setting['statics'],'')
+    
+                try:
+                    res=render_media(path)
+                except IOError:
+                    raise HTTP404Error("NOT FOUND THIS FILE")
+                return res
+
             if re.match(self._environ['PATH_INFO'], url_handler[0]):
                 html_code = url_handler[1](self.request)
                 return html_code
@@ -42,14 +57,14 @@ class WebApp():
 
 class jolla_server(WSGIServer):
 
-    def __init__(self, app, port=8000, host="127.0.0.1"):
+    def __init__(self, app, port=8000, host="127.0.0.1", debug=False):
         self.port = port
         self.host = host
         self.app = app
         WSGIServer.__init__(self, listener=(
             self.host, self.port), application=self.application)
 
-    def application(self,environ, start_response):
+    def application(self, environ, start_response):
 
         the_app = self.app(environ)
 
@@ -61,7 +76,8 @@ class jolla_server(WSGIServer):
             html_code = '404 NOT FOUND'
 
         header = [
-            ('Content-Type', 'text/html')
+            ('Content-Type', 'text/html'),
+            ('Server','Jolla/1.0')
         ]
 
         start_response(status, header)
