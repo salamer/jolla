@@ -3,6 +3,7 @@ gevent.monkey.patch_all()
 
 from gevent.pywsgi import WSGIServer
 import re
+from HTTPerror import HTTP404Error,HTTP403Error
 
 class WebApp():
 
@@ -31,10 +32,10 @@ class WebApp():
                 if self._environ['PATH_INFO'] != '/':
                     continue
                 else:
-                    html_code = url_handler[1]()
+                    html_code = url_handler[1](self.request)
 
             if re.match(self._environ['PATH_INFO'], url_handler[0]):
-                html_code = url_handler[1]()
+                html_code = url_handler[1](self.request)
                 return html_code
         raise HTTP404Error('REQUEST NOT FOUND IN ROUTE CONFIGURATION')
 
