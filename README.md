@@ -9,20 +9,45 @@ jolla is a pure API server framework,and it is based on the gevent.
 add a `app.py`,and write dowm:
 
 ```
-from jolla import server
-from jolla import plugins
+from jolla import server,SessionError,plugins,session,HTTP404Error
 
-def index():
-    return plugins.render('templates/index.html')
+session = session()
+
+
+def index(request):
+    return plugins.render('index.html')
+
+
+def data(request):
+    data = {'data': request['data']['ww']}
+    return plugins.render_json(data)
+
+
+def add(request):
+    session.add_value('qq', 'ww')
+    return 'yes'
+
+
+def get(request):
+    try:
+        data = session.get_value('qq')
+    except SessionError:
+        raise HTTP404Error
+    return data
+
 
 class app(server.WebApp):
-    urls=[
-        (r'/',index)
+    urls = [
+        (r'/', index),
+        (r'/data', data),
+        (r'/add', add),
+        (r'/get', get)
     ]
 
-if __name__=='__main__':
-    server=server.jolla_server(app)
+if __name__ == '__main__':
+    server = server.jolla_server(app)
     server.run_server()
+
 ```
 
 and then,run:
