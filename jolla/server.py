@@ -55,6 +55,10 @@ class WebApp():
                 return html_code
         raise HTTP404Error('REQUEST NOT FOUND IN ROUTE CONFIGURATION')
 
+    def url_filter(self,path):
+        path=path.replace(' ','')
+        
+
 
 class jolla_server(WSGIServer):
 

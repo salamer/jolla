@@ -28,3 +28,10 @@ class HTTP403Error(HTTPError):
 
     def __str__(self):
         return "403 FORBBIDEN"
+
+
+class HTTP500Error(HTTPError):
+    error_code = 500
+
+    def __str__(self):
+        return "server error"

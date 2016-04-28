@@ -12,7 +12,7 @@ def index(request):
 
 
 def data(request):
-    data = {'data': request['data']['ww']}
+    data = {'data': 'ww'}
     return plugins.render_json(data)
 
 
