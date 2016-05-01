@@ -4,13 +4,19 @@
 
 import json
 import os
+from plugins import HTTP404Error
+
 
 
 def render(filename):
-    with open(os.path.abspath('templates/' + filename), "r") as f:
-        res = f.read()
+    try:
+        with open(os.path.abspath('templates/' + filename), "r") as f:
+            res = f.read()
 
-    return (res, ('Content-Type', 'text/html'))
+        return (res, ('Content-Type', 'text/html'))
+    except IOError:
+        print "NO SUCH FILE"
+        raise HTTP404Error
 
 
 def render_json(data):
