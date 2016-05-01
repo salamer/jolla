@@ -18,6 +18,7 @@ def data(request):
 
 def add(request):
     session.add_value('qq', 'ww')
+
     return 'yes'
 
 

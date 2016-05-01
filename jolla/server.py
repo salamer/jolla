@@ -3,7 +3,7 @@ gevent.monkey.patch_all()
 
 from gevent.pywsgi import WSGIServer
 import re
-from HTTPerror import HTTP404Error, HTTP403Error
+from HTTPerror import HTTP404Error, HTTP403Error, HTTP502Error
 from plugins import render_media
 
 
@@ -74,8 +74,11 @@ class WebApp():
         query_string = self._environ['QUERY_STRING']
         if query_string:
             for data_pair in query_string.split('&'):
-                key, value = data_pair.split('=')
-                self.request['data'][key] = value
+                try:
+                    key, value = data_pair.split('=')
+                    self.request['data'][key] = value
+                except ValueError:
+                    pass
 
         for url in self.urls:
             res = self.url_parse(url[0])
@@ -108,7 +111,7 @@ class WebApp():
                 if '?' in url_handler[0]:
                     re_query = re.findall(url_reg, self._path)
                     if re_query[0]:
-                        print len(re_query[0])
+
                         self.request[url_handler[2]] = re_query[0]
                         html_code = url_handler[1](self.request)
                         return html_code
@@ -155,19 +158,21 @@ class jolla_server(WSGIServer):
 
         try:
             html_code = the_app.parse()
+            if not isinstance(html_code, tuple):
+                html_code = (html_code, ('Content-Type', 'text/html'))
             status = '200 OK'
         except HTTP404Error:
             status = '404 NOT FOUND'
-            html_code = '404 NOT FOUND'
+            html_code = ('404 NOT FOUND', ('Content-Type', 'text/html'))
 
         header = [
-            ('Content-Type', 'text/html'),
+            html_code[1],
             ('Server', 'Jolla/1.0')
         ]
 
         start_response(status, header)
 
-        return html_code
+        return html_code[0]
 
     def run_server(self):
         print "the server is running on the {} in the port {}".format(self.host, self.port)
