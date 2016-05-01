@@ -20,7 +20,9 @@ setup(
 
     install_requires=[
         'gevent'
-    ]
+    ],
+
+    packages=['jolla'],
 
     classifiers=[
         "Development Status :: 1.0 - Production/Stable",
