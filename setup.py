@@ -25,9 +25,9 @@ setup(
     packages=['jolla'],
 
     classifiers=[
-        "Development Status :: 1.0 - Production/Stable",
+         'Development Status :: 3 - Alpha',
          "License :: OSI Approved :: Apache Software License",
-         "Operating System :: Web",
+         'Environment :: Web Environment',
          "Programming Language :: Python :: 2.7",
          'Topic :: Internet :: WWW/HTTP',
          'Topic :: Software Development :: Libraries :: Python Modules'

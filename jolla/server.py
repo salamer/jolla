@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 
-import gevent.monkey
-gevent.monkey.patch_all()
+from gevent import monkey
+monkey.patch_all()
 
 from gevent.pywsgi import WSGIServer
 import re
