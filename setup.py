@@ -10,7 +10,7 @@ import config
 setup(
     name='jolla',
     keywords=['back-end','framework','RESTful','gevent'],
-    version=config.__version__,
+    version='1.0.4',
     description='high performance RESTful framework',
     author='aljun',
     author_email='salamer_gaga@163.com',
