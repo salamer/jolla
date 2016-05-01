@@ -34,8 +34,8 @@ class WebApp():
         self._environ = environ
 
         self._path = self._environ['PATH_INFO']
-        if self._path[-1]!='/':
-            self._path=self._path+'/'
+        if self._path[-1] != '/':
+            self._path = self._path + '/'
 
         self.request = {}
 
@@ -58,10 +58,8 @@ class WebApp():
             self.request['content_length'] = self._environ['CONTENT_LENGTH']
             self.request['content_type'] = self._environ['CONTENT_TYPE']
         except KeyError:
-            self.request['content_length']=None
-            self.request['content_type']=None
-
-
+            self.request['content_length'] = None
+            self.request['content_type'] = None
 
         self.request['http_accept_encoding'] = self._environ[
             'HTTP_ACCEPT_ENCODING']
@@ -79,14 +77,12 @@ class WebApp():
                 key, value = data_pair.split('=')
                 self.request['data'][key] = value
 
-
         for url in self.urls:
-            res=self.url_parse(url[0])
-            if isinstance(res,tuple):
-                self._parsed_urls.append((res[0],url[1],res[1]))
+            res = self.url_parse(url[0])
+            if isinstance(res, tuple):
+                self._parsed_urls.append((res[0] + '$', url[1], res[1]))
             else:
-                self._parsed_urls.append((res,url[1]))
-
+                self._parsed_urls.append((res + '$', url[1]))
 
     def parse(self):
         for url_handler in self._parsed_urls:
@@ -106,17 +102,20 @@ class WebApp():
                     raise HTTP404Error("NOT FOUND THIS FILE")
                 return res
 
-            url_reg=re.compile(url_handler[0])
+            url_reg = re.compile(url_handler[0])
             if url_reg.match(self._path):
-                re_query=re.findall(url_reg,self._path)
-                if re_query[0]:
-                    self.request[url_handler[2]]=re_query[0]
-                    html_code=url_handler[1](self.request)
-                else:
-                    html_code=url_handler[1](self.request)
+
+                if '?' in url_handler[0]:
+                    re_query = re.findall(url_reg, self._path)
+                    if re_query[0]:
+                        print len(re_query[0])
+                        self.request[url_handler[2]] = re_query[0]
+                        html_code = url_handler[1](self.request)
+                        return html_code
+
+                html_code = url_handler[1](self.request)
 
                 return html_code
-
         raise HTTP404Error('REQUEST NOT FOUND IN ROUTE CONFIGURATION')
 
     def url_parse(self, path):
@@ -136,8 +135,8 @@ class WebApp():
             else:
                 self.request[url_query] = None
             the_url = path.replace('<' + url_query + '>',
-                                   r'(?P<' + url_query + '>\w*)')
-            return (the_url,url_query)
+                                   '(?P<' + url_query + '>\\w*)')
+            return (the_url, url_query)
         return path
 
 

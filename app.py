@@ -42,6 +42,7 @@ class app(server.WebApp):
     urls = [
         (r'/', index),
         (r'/data/<id>', data),
+        (r'/data', data),
         (r'/add', add),
         (r'/get', get),
         (r'/blog', blog)
