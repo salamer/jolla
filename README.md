@@ -5,6 +5,10 @@ jolla is a pure API server framework,and it is based on the gevent.
 
 > still being constrating
 
+##Install
+
+    sudo pip install jolla 
+
 ## QUICKSTART
 add a `app.py`,and write dowm:
 

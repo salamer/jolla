@@ -9,7 +9,7 @@ import config
 
 setup(
     name='jolla',
-    keywords=['back-end','framework','RESTful','gevent'],
+    keywords=['back-end', 'framework', 'RESTful', 'gevent'],
     version='1.0.4',
     description='high performance RESTful framework',
     author='aljun',
@@ -25,11 +25,11 @@ setup(
     packages=['jolla'],
 
     classifiers=[
-         'Development Status :: 3 - Alpha',
-         "License :: OSI Approved :: Apache Software License",
-         'Environment :: Web Environment',
-         "Programming Language :: Python :: 2.7",
-         'Topic :: Internet :: WWW/HTTP',
-         'Topic :: Software Development :: Libraries :: Python Modules'
+        'Development Status :: 3 - Alpha',
+        "License :: OSI Approved :: Apache Software License",
+        'Environment :: Web Environment',
+        "Programming Language :: Python :: 2.7",
+        'Topic :: Internet :: WWW/HTTP',
+        'Topic :: Software Development :: Libraries :: Python Modules'
     ]
 )
