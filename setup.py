@@ -5,12 +5,12 @@ import ast
 
 _version_re = re.compile(r'__version__=(.*)')
 
-import jolla
+import config
 
 setup(
     name='jolla',
     keywords=['back-end','framework','RESTful','gevent'],
-    version=jolla.__version__,
+    version=config.__version__,
     description='high performance RESTful framework',
     author='aljun',
     author_email='salamer_gaga@163.com',
