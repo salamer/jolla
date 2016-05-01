@@ -98,7 +98,7 @@ class WebApp():
                     continue
                 else:
                     html_code = url_handler[1](self.request)
-
+            '''
             if self.setting['statics'] in self._path:
                 path = self._path.replace(
                     self.setting['statics'], '')
@@ -108,6 +108,7 @@ class WebApp():
                 except IOError:
                     raise HTTP404Error("NOT FOUND THIS FILE")
                 return res
+            '''
 
             url_reg = re.compile(url_handler[0])
             if url_reg.match(self._path):
