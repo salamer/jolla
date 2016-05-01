@@ -23,7 +23,27 @@ class WebApp():
 
         self.request = {}
 
+        try:
+            self.request['cookies'] = self._environ['HTTP_COOKIE']
+        except KeyError:
+            self.request['cookies'] = None
+
+        self.request['http_protocol'] = self._environ['SERVER_PROTOCOL']
+
+        self.request['user_agent'] = self._environ['HTTP_USER_AGENT']
+
+        self.request['http_connect'] = self._environ['HTTP_CONNECTION']
+
+        self.request['http_port'] = self._environ['HTTP_HOST']
+
         self.request['method'] = self._environ['REQUEST_METHOD']
+
+        self.request['content_length']=self._environ['CONTENT_LENGTH']
+
+        self.request['content_type']=self._environ['CONTENT_TYPE']
+
+        self.request['http_accept_encoding']=self._environ['HTTP_ACCEPT_ENCODING']
+
         self.request['data'] = {}
         line = self._environ['QUERY_STRING']
         request_data = environ['wsgi.input'].read()
@@ -31,6 +51,13 @@ class WebApp():
             for data_pair in request_data.split('&'):
                 key, value = data_pair.split('=')
                 self.request['data'][key] = value
+        query_string = self._environ['QUERY_STRING']
+        if query_string:
+            for data_pair in query_string.split('&'):
+                key, value = data_pair.split('=')
+                self.request['data'][key] = value
+
+        print self.request
 
     def parse(self):
         for url_handler in self.urls:
@@ -55,9 +82,8 @@ class WebApp():
                 return html_code
         raise HTTP404Error('REQUEST NOT FOUND IN ROUTE CONFIGURATION')
 
-    def url_filter(self,path):
-        path=path.replace(' ','')
-        
+    def url_filter(self, path):
+        path = path.replace(' ', '')
 
 
 class jolla_server(WSGIServer):
