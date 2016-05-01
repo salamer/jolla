@@ -1,3 +1,7 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+
 from jolla import server
 from jolla import plugins
 from jolla import session
