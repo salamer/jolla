@@ -12,7 +12,7 @@ def index(request):
 
 
 def data(request):
-    data = {'data': 'ww'}
+    data = {'data': request['id']}
     return plugins.render_json(data)
 
 
@@ -41,7 +41,7 @@ def blog(request):
 class app(server.WebApp):
     urls = [
         (r'/', index),
-        (r'/data', data),
+        (r'/data/<id>', data),
         (r'/add', add),
         (r'/get', get),
         (r'/blog', blog)

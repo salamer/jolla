@@ -7,9 +7,23 @@ from HTTPerror import HTTP404Error, HTTP403Error
 from plugins import render_media
 
 
+class RouteError(Exception):
+
+    def __init__(self, info):
+        if(info == 'too many re'):
+            print "TOO MORE REGULAR SEARCH"
+        if(info == 'route error'):
+            print 'WRONG ROUTE DESIGN'
+        if(info == 'query already in request'):
+            print "IT HAS ALREADY IN REQUEST VALUE"
+
+
 class WebApp():
 
     urls = []
+
+    _parsed_urls = []
+
     setting = {
         'statics': r'/statics',
         'templates': r'/templates'
@@ -20,6 +34,8 @@ class WebApp():
         self._environ = environ
 
         self._path = self._environ['PATH_INFO']
+        if self._path[-1]!='/':
+            self._path=self._path+'/'
 
         self.request = {}
 
@@ -38,11 +54,17 @@ class WebApp():
 
         self.request['method'] = self._environ['REQUEST_METHOD']
 
-        self.request['content_length']=self._environ['CONTENT_LENGTH']
+        try:
+            self.request['content_length'] = self._environ['CONTENT_LENGTH']
+            self.request['content_type'] = self._environ['CONTENT_TYPE']
+        except KeyError:
+            self.request['content_length']=None
+            self.request['content_type']=None
 
-        self.request['content_type']=self._environ['CONTENT_TYPE']
 
-        self.request['http_accept_encoding']=self._environ['HTTP_ACCEPT_ENCODING']
+
+        self.request['http_accept_encoding'] = self._environ[
+            'HTTP_ACCEPT_ENCODING']
 
         self.request['data'] = {}
         line = self._environ['QUERY_STRING']
@@ -57,18 +79,25 @@ class WebApp():
                 key, value = data_pair.split('=')
                 self.request['data'][key] = value
 
-        print self.request
+
+        for url in self.urls:
+            res=self.url_parse(url[0])
+            if isinstance(res,tuple):
+                self._parsed_urls.append((res[0],url[1],res[1]))
+            else:
+                self._parsed_urls.append((res,url[1]))
+
 
     def parse(self):
-        for url_handler in self.urls:
+        for url_handler in self._parsed_urls:
             if url_handler[0] == r'/':
-                if self._environ['PATH_INFO'] != '/':
+                if self._path != '/':
                     continue
                 else:
                     html_code = url_handler[1](self.request)
 
-            if self.setting['statics'] in self._environ['PATH_INFO']:
-                path = self._environ['PATH_INFO'].replace(
+            if self.setting['statics'] in self._path:
+                path = self._path.replace(
                     self.setting['statics'], '')
 
                 try:
@@ -77,13 +106,39 @@ class WebApp():
                     raise HTTP404Error("NOT FOUND THIS FILE")
                 return res
 
-            if re.match(self._environ['PATH_INFO'], url_handler[0]):
-                html_code = url_handler[1](self.request)
+            url_reg=re.compile(url_handler[0])
+            if url_reg.match(self._path):
+                re_query=re.findall(url_reg,self._path)
+                if re_query[0]:
+                    self.request[url_handler[2]]=re_query[0]
+                    html_code=url_handler[1](self.request)
+                else:
+                    html_code=url_handler[1](self.request)
+
                 return html_code
+
         raise HTTP404Error('REQUEST NOT FOUND IN ROUTE CONFIGURATION')
 
-    def url_filter(self, path):
+    def url_parse(self, path):
         path = path.replace(' ', '')
+        if path[-1] != '/':
+            path = path + '/'
+        if '<' in path and '>' in path:
+            if path.count("<") != path.count(">"):
+                raise RouteError("route error")
+            if path.count("<") > 1:
+                raise RouteError("too many re")
+
+            reg = re.compile(r'<(\w+)>')
+            url_query = re.findall(reg, path)[0]
+            if url_query in self.request:
+                raise RouteError("query already in request")
+            else:
+                self.request[url_query] = None
+            the_url = path.replace('<' + url_query + '>',
+                                   r'(?P<' + url_query + '>\w*)')
+            return (the_url,url_query)
+        return path
 
 
 class jolla_server(WSGIServer):
