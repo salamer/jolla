@@ -3,14 +3,10 @@ import re
 from setuptools import setup
 import ast
 
-_version_re = re.compile(r'__version__=(.*)')
-
-import config
-
 setup(
     name='jolla',
     keywords=['back-end', 'framework', 'RESTful', 'gevent'],
-    version='1.0.4',
+    version='1.0.5',
     description='high performance RESTful framework',
     author='aljun',
     author_email='salamer_gaga@163.com',
