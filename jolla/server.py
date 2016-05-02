@@ -10,13 +10,12 @@ import re
 
 
 static_setting = {
-    'statics': r'statics',
     'templates': r'templates'
 }
 
 
 from HTTPerror import HTTP404Error, HTTP403Error, HTTP502Error
-from plugins import render_media
+
 
 
 class RouteError(Exception):
@@ -53,7 +52,7 @@ class WebApp():
 
     global static_setting
 
-    use_statics = True
+    templates=False
 
     def __init__(self, environ):
 
@@ -123,6 +122,10 @@ class WebApp():
             else:
                 self._parsed_urls.append((res + '$', url[1]))
 
+
+        if self.templates:
+            static_setting['templates']=self.templates
+
     def parse(self):
         for url_handler in self._parsed_urls:
             if url_handler[0] == r'/':
@@ -131,15 +134,6 @@ class WebApp():
                 else:
                     html_code = url_handler[1](self.request)
 
-            if 'statics' in self._path and self.use_statics:
-                path = self._path.replace(
-                    static_setting['statics'], '')
-
-                try:
-                    res = render_media(path)
-                except IOError:
-                    raise HTTP404Error("NOT FOUND THIS FILE")
-                return res
 
             url_reg = re.compile(url_handler[0])
             if url_reg.match(self._path):
@@ -204,9 +198,8 @@ class jolla_server(WSGIServer):
             ('Server', 'Jolla/1.0')
         ]
 
-        for i in range(1,len(html_code)):
+        for i in range(1, len(html_code)):
             header.append(html_code[i])
-
 
         start_response(status, header)
 

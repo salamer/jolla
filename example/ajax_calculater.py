@@ -12,6 +12,8 @@ class app(WebApp):
         (r'/add', add)
     ]
 
+    templates='cal'
+
 if __name__ == '__main__':
     server = jolla_server(app)
     server.run_server()

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+  <p>two numbers</p>
+  <form action="/add/" method="get">
+    a:
+    <input type="text" id="a" name="a">
+    <br> b:
+    <input type="text" id="b" name="b">
+    <br>
+    <p>result: <span id='result'></span></p>
+    <button type="button" id='sum'>submit</button>
+  </form>
+
+  <script src="http://apps.bdimg.com/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      $("#sum").click(function() {
+        var a = $("#a").val();
+        var b = $("#b").val();
+
+        $.get("/add/", {
+          'a': a,
+          'b': b
+        }, function(ret) {
+          $('#result').html(ret.answer);
+        })
+      });
+    });
+  </script>
+</body>
+
+</html>
