@@ -34,6 +34,7 @@ class session(buffer):
             if value:
                 if self._data[key] == value:
                     return True
+
                 else:
                     return False
             else:

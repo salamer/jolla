@@ -17,7 +17,6 @@ static_setting = {
 from HTTPerror import HTTP404Error, HTTP403Error, HTTP502Error
 
 
-
 class RouteError(Exception):
 
     def __init__(self, info):
@@ -52,7 +51,7 @@ class WebApp():
 
     global static_setting
 
-    templates=False
+    templates = False
 
     def __init__(self, environ):
 
@@ -122,9 +121,8 @@ class WebApp():
             else:
                 self._parsed_urls.append((res + '$', url[1]))
 
-
         if self.templates:
-            static_setting['templates']=self.templates
+            static_setting['templates'] = self.templates
 
     def parse(self):
         for url_handler in self._parsed_urls:
@@ -133,7 +131,6 @@ class WebApp():
                     continue
                 else:
                     html_code = url_handler[1](self.request)
-
 
             url_reg = re.compile(url_handler[0])
             if url_reg.match(self._path):
