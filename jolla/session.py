@@ -16,6 +16,15 @@ class SessionError(Exception):
 
 class session(buffer):
 
+    def empty(self):
+        if self._data:
+            return True
+        else:
+            return False
+
+    def session_count(self):
+        return len(self._data)
+
     def add_value(self, key, value):
         self._data[key] = value
         return True

@@ -7,6 +7,14 @@ monkey.patch_all()
 
 from gevent.pywsgi import WSGIServer
 import re
+
+
+static_setting = {
+    'statics': r'statics',
+    'templates': r'templates'
+}
+
+
 from HTTPerror import HTTP404Error, HTTP403Error, HTTP502Error
 from plugins import render_media
 
@@ -14,12 +22,27 @@ from plugins import render_media
 class RouteError(Exception):
 
     def __init__(self, info):
-        if(info == 'too many re'):
-            print "TOO MORE REGULAR SEARCH"
-        if(info == 'route error'):
-            print 'WRONG ROUTE DESIGN'
-        if(info == 'query already in request'):
-            print "IT HAS ALREADY IN REQUEST VALUE"
+        pass
+
+    def __str__(self):
+        if(self.info == 'too many re'):
+            return "<TOO MORE REGULAR SEARCH>"
+        if(self.info == 'route error'):
+            return '<WRONG ROUTE DESIGN>'
+        if(self.info == 'query already in request'):
+            return "<IT HAS ALREADY IN REQUEST VALUE>"
+
+
+class RequestError(Exception):
+
+    def __init__(self):
+        pass
+
+
+class RequestValueError(RequestError):
+
+    def __str__(self):
+        return "<the value has already in request's data>"
 
 
 class WebApp():
@@ -28,10 +51,9 @@ class WebApp():
 
     _parsed_urls = []
 
-    setting = {
-        'statics': r'/statics',
-        'templates': r'/templates'
-    }
+    global static_setting
+
+    use_statics = True
 
     def __init__(self, environ):
 
@@ -69,23 +91,33 @@ class WebApp():
             'HTTP_ACCEPT_ENCODING']
 
         self.request['data'] = {}
+        self.request['query_string'] = {}
+
         line = self._environ['QUERY_STRING']
         request_data = environ['wsgi.input'].read()
         if request_data:
             for data_pair in request_data.split('&'):
                 key, value = data_pair.split('=')
+
                 self.request['data'][key] = value
+
         query_string = self._environ['QUERY_STRING']
         if query_string:
             for data_pair in query_string.split('&'):
                 try:
                     key, value = data_pair.split('=')
                     self.request['data'][key] = value
+                    self.request['query_string'][key] = value
                 except ValueError:
                     pass
 
         for url in self.urls:
-            res = self.url_parse(url[0])
+            try:
+                res = self.url_parse(url[0])
+            except RouteError:
+                print "<the route design got some mistakes>"
+                raise HTTP404Error
+
             if isinstance(res, tuple):
                 self._parsed_urls.append((res[0] + '$', url[1], res[1]))
             else:
@@ -98,17 +130,16 @@ class WebApp():
                     continue
                 else:
                     html_code = url_handler[1](self.request)
-            '''
-            if self.setting['statics'] in self._path:
+
+            if 'statics' in self._path and self.use_statics:
                 path = self._path.replace(
-                    self.setting['statics'], '')
+                    static_setting['statics'], '')
 
                 try:
                     res = render_media(path)
                 except IOError:
                     raise HTTP404Error("NOT FOUND THIS FILE")
                 return res
-            '''
 
             url_reg = re.compile(url_handler[0])
             if url_reg.match(self._path):
@@ -159,9 +190,8 @@ class jolla_server(WSGIServer):
 
     def application(self, environ, start_response):
 
-        the_app = self.app(environ)
-
         try:
+            the_app = self.app(environ)
             html_code = the_app.parse()
             if not isinstance(html_code, tuple):
                 html_code = (html_code, ('Content-Type', 'text/html'))
@@ -171,9 +201,12 @@ class jolla_server(WSGIServer):
             html_code = ('404 NOT FOUND', ('Content-Type', 'text/html'))
 
         header = [
-            html_code[1],
             ('Server', 'Jolla/1.0')
         ]
+
+        for i in range(1,len(html_code)):
+            header.append(html_code[i])
+
 
         start_response(status, header)
 

@@ -3,11 +3,18 @@
 # Jolla
 jolla is a pure API server framework,and it is based on the gevent.
 
+
+
 > still being constrating
 
-##Install
+version:1.1.0
 
-    sudo pip install jolla 
+* basic work have done,it's already a api server for api collect.
+* delete the statics function,if you wanna css or js,use cdn or server like nginx and apache httpd;
+
+##INSTALL
+
+    sudo pip install jolla
 
 ## QUICKSTART
 add a `app.py`,and write dowm:
