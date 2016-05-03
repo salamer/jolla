@@ -23,9 +23,9 @@ def render(filename):
         raise HTTP404Error
 
 
-def render_json(data):
+def render_json(data,indent=0):
     if isinstance(data, dict):
-        return (json.dumps(data), ('Content-Type', 'application/json'))
+        return (json.dumps(data,ensure_ascii=False,indent=indent), ('Content-Type', 'application/json'))
     else:
         print "<the data must be dict>"
         raise AttributeError
