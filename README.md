@@ -28,6 +28,12 @@ session = session()
 def index(request):
     return plugins.render('index.html')
 
+def chinese(request):
+    if request['data']['ww']=='海贼王':
+        return '海贼王'
+    else:
+        return '支持中文传值'
+
 
 def data(request):
     data = {'data': request['id']}
@@ -36,6 +42,7 @@ def data(request):
 
 def add(request):
     session.add_value('qq', 'ww')
+
     return 'yes'
 
 
@@ -63,12 +70,14 @@ class app(server.WebApp):
         (r'/data', data),
         (r'/add', add),
         (r'/get', get),
-        (r'/blog', blog)
+        (r'/blog', blog),
+        (r'/chinese',chinese)
     ]
 
 if __name__ == '__main__':
     server = server.jolla_server(app)
     server.run_server()
+
 ```
 
 and then,run:

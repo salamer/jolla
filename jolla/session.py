@@ -16,6 +16,12 @@ class SessionError(Exception):
 
 class session(buffer):
 
+    def __str__(self):
+        return "Jolla.jolla_sessionObject"
+
+    def __repr__(self):
+        return "<class 'jolla_sessionObject'>"
+
     def empty(self):
         if self._data:
             return True

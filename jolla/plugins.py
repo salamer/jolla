@@ -27,6 +27,7 @@ def render_json(data):
     if isinstance(data, dict):
         return (json.dumps(data), ('Content-Type', 'application/json'))
     else:
+        print "<the data must be dict>"
         raise AttributeError
 
 

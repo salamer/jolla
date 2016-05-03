@@ -7,7 +7,7 @@ monkey.patch_all()
 
 from gevent.pywsgi import WSGIServer
 import re
-
+from urllib import unquote
 
 static_setting = {
     'templates': r'templates'
@@ -19,8 +19,8 @@ from HTTPerror import HTTP404Error, HTTP403Error, HTTP502Error
 
 class RouteError(Exception):
 
-    def __init__(self, info):
-        pass
+    def __init__(self, info=None):
+        print "<" + info + ">"
 
     def __str__(self):
         if(self.info == 'too many re'):
@@ -53,79 +53,89 @@ class WebApp():
 
     templates = False
 
-    def __init__(self, environ):
-
-        self._environ = environ
-
-        self._path = self._environ['PATH_INFO']
-        if self._path[-1] != '/':
-            self._path = self._path + '/'
-
+    def __init__(self, environ=None, get_urls=True):
         self.request = {}
 
-        try:
-            self.request['cookies'] = self._environ['HTTP_COOKIE']
-        except KeyError:
-            self.request['cookies'] = None
+        if environ:
+            self._environ = environ
 
-        self.request['http_protocol'] = self._environ['SERVER_PROTOCOL']
+            self._path = self._environ['PATH_INFO']
+            if self._path[-1] != '/':
+                self._path = self._path + '/'
 
-        self.request['user_agent'] = self._environ['HTTP_USER_AGENT']
-
-        self.request['http_connect'] = self._environ['HTTP_CONNECTION']
-
-        self.request['http_port'] = self._environ['HTTP_HOST']
-
-        self.request['method'] = self._environ['REQUEST_METHOD']
-
-        try:
-            self.request['content_length'] = self._environ['CONTENT_LENGTH']
-            self.request['content_type'] = self._environ['CONTENT_TYPE']
-        except KeyError:
-            self.request['content_length'] = None
-            self.request['content_type'] = None
-
-        self.request['http_accept_encoding'] = self._environ[
-            'HTTP_ACCEPT_ENCODING']
-
-        self.request['data'] = {}
-        self.request['query_string'] = {}
-
-        line = self._environ['QUERY_STRING']
-        request_data = environ['wsgi.input'].read()
-        if request_data:
-            for data_pair in request_data.split('&'):
-                key, value = data_pair.split('=')
-
-                self.request['data'][key] = value
-
-        query_string = self._environ['QUERY_STRING']
-        if query_string:
-            for data_pair in query_string.split('&'):
-                try:
-                    key, value = data_pair.split('=')
-                    self.request['data'][key] = value
-                    self.request['query_string'][key] = value
-                except ValueError:
-                    pass
-
-        for url in self.urls:
             try:
-                res = self.url_parse(url[0])
-            except RouteError:
-                print "<the route design got some mistakes>"
-                raise HTTP404Error
+                self.request['cookies'] = self._environ['HTTP_COOKIE']
+            except KeyError:
+                self.request['cookies'] = None
 
-            if isinstance(res, tuple):
-                self._parsed_urls.append((res[0] + '$', url[1], res[1]))
-            else:
-                self._parsed_urls.append((res + '$', url[1]))
+            self.request['http_protocol'] = self._environ['SERVER_PROTOCOL']
+
+            self.request['user_agent'] = self._environ['HTTP_USER_AGENT']
+
+            self.request['http_connect'] = self._environ['HTTP_CONNECTION']
+
+            self.request['http_port'] = self._environ['HTTP_HOST']
+
+            self.request['method'] = self._environ['REQUEST_METHOD']
+
+            try:
+                self.request['content_length'] = self._environ[
+                    'CONTENT_LENGTH']
+                self.request['content_type'] = self._environ['CONTENT_TYPE']
+            except KeyError:
+                self.request['content_length'] = None
+                self.request['content_type'] = None
+
+                self.request['http_accept_encoding'] = self._environ[
+                    'HTTP_ACCEPT_ENCODING']
+
+            self.request['data'] = {}
+            self.request['query_string'] = {}
+
+            line = self._environ['QUERY_STRING']
+            request_data = environ['wsgi.input'].read()
+            if request_data:
+                request_data = unquote(request_data)
+                for data_pair in request_data.split('&'):
+                    key, value = data_pair.split('=')
+
+                    self.request['data'][key] = value
+
+            query_string = self._environ['QUERY_STRING']
+            if query_string:
+                query_string = unquote(query_string)
+                for data_pair in query_string.split('&'):
+                    try:
+                        key, value = data_pair.split('=')
+                        self.request['data'][key] = value
+                        self.request['query_string'][key] = value
+                    except ValueError:
+                        pass
+
+        if not get_urls:
+            for url in self.urls:
+                try:
+                    res = self.url_parse(url[0])
+                except RouteError:
+                    print "<the route design got some mistakes>"
+                    raise HTTP404Error
+
+                if isinstance(res, tuple):
+                    self._parsed_urls.append((res[0] + '$', url[1], res[1]))
+                else:
+                    self._parsed_urls.append((res + '$', url[1]))
 
         if self.templates:
             static_setting['templates'] = self.templates
 
-    def parse(self):
-        for url_handler in self._parsed_urls:
+    def __repr__(self):
+        return "Jolla.WebAppObject"
+
+    def __str__(self):
+        return "<class 'Jolla.WebAppObject'>"
+
+    def parse(self, urls):
+        for url_handler in urls:
             if url_handler[0] == r'/':
                 if self._path != '/':
                     continue
@@ -139,16 +149,24 @@ class WebApp():
                     re_query = re.findall(url_reg, self._path)
                     if re_query[0]:
 
-                        self.request[url_handler[2]] = re_query[0]
-                        html_code = url_handler[1](self.request)
-                        return html_code
+                        if url_handler[2] in self.request:
+                            raise RouteError("query already in request")
+                        else:
 
-                html_code = url_handler[1](self.request)
+                            self.request[url_handler[2]] = re_query[0]
+                            html_code = url_handler[1](self.request)
+                            return html_code
+
+                try:
+                    html_code = url_handler[1](self.request)
+                except TypeError:
+                    html_code = url_handler[1]()
 
                 return html_code
         raise HTTP404Error('REQUEST NOT FOUND IN ROUTE CONFIGURATION')
 
     def url_parse(self, path):
+
         path = path.replace(' ', '')
         if path[-1] != '/':
             path = path + '/'
@@ -160,14 +178,13 @@ class WebApp():
 
             reg = re.compile(r'<(\w+)>')
             url_query = re.findall(reg, path)[0]
-            if url_query in self.request:
-                raise RouteError("query already in request")
-            else:
-                self.request[url_query] = None
             the_url = path.replace('<' + url_query + '>',
-                                   '(?P<' + url_query + '>\\w*)')
+                                   '(?P<' + url_query + '>\\w+)')
             return (the_url, url_query)
         return path
+
+    def get_parsed_urls(self):
+        return self._parsed_urls
 
 
 class jolla_server(WSGIServer):
@@ -176,14 +193,24 @@ class jolla_server(WSGIServer):
         self.port = port
         self.host = host
         self.app = app
+
+        my_app = self.app(get_urls=False)
+        self.urls = my_app.get_parsed_urls()
+
         WSGIServer.__init__(self, listener=(
             self.host, self.port), application=self.application)
+
+    def __str__(self):
+        return "<class 'Jolla.jolla_serverObeject'>"
+
+    def __repr__(self):
+        return 'Jolla.jolla_serverObeject'
 
     def application(self, environ, start_response):
 
         try:
             the_app = self.app(environ)
-            html_code = the_app.parse()
+            html_code = the_app.parse(self.urls)
             if not isinstance(html_code, tuple):
                 html_code = (html_code, ('Content-Type', 'text/html'))
             status = '200 OK'
