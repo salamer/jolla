@@ -72,7 +72,10 @@ class WebApp():
 
             self.request['user_agent'] = self._environ['HTTP_USER_AGENT']
 
-            self.request['http_connect'] = self._environ['HTTP_CONNECTION']
+            try:
+                self.request['http_connect'] = self._environ['HTTP_CONNECTION']
+            except KeyError:
+                self.request['http_connect'] = None
 
             self.request['http_port'] = self._environ['HTTP_HOST']
 
