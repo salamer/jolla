@@ -85,12 +85,12 @@ class WebApp():
                 self.request['content_length'] = self._environ[
                     'CONTENT_LENGTH']
                 self.request['content_type'] = self._environ['CONTENT_TYPE']
+                self.request['http_accept_encoding'] = self._environ[
+                    'HTTP_ACCEPT_ENCODING']
             except KeyError:
                 self.request['content_length'] = None
                 self.request['content_type'] = None
-
-                self.request['http_accept_encoding'] = self._environ[
-                    'HTTP_ACCEPT_ENCODING']
+                self.request['http_accept_encoding'] = None
 
             self.request['data'] = {}
             self.request['query_string'] = {}
