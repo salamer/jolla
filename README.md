@@ -3,18 +3,17 @@
 # Jolla
 jolla is a pure API server framework,and it is based on the gevent.
 
-
-
 > still being constrating
 
 version:1.1.0
+- basic work have done,it's already a api server for api collect.
+- delete the statics function,if you wanna css or js,use cdn or server like nginx and apache httpd;
 
-* basic work have done,it's already a api server for api collect.
-* delete the statics function,if you wanna css or js,use cdn or server like nginx and apache httpd;
+## INSTALL
 
-##INSTALL
-
-    sudo pip install jolla
+```
+sudo pip install jolla
+```
 
 ## QUICKSTART
 add a `app.py`,and write dowm:
@@ -29,10 +28,12 @@ def index(request):
     return plugins.render('index.html')
 
 def chinese(request):
-    if request['data']['ww']=='海贼王':
-        return '海贼王'
-    else:
-        return '支持中文传值'
+    try:
+        if request['data']['ww']=='海贼王':
+            return 'great anime'
+    except:
+        pass
+    return 'yeah!chinese'
 
 
 def data(request):
@@ -73,11 +74,6 @@ class app(server.WebApp):
         (r'/blog', blog),
         (r'/chinese',chinese)
     ]
-
-if __name__ == '__main__':
-    server = server.jolla_server(app)
-    server.run_server()
-
 ```
 
 and then,run:

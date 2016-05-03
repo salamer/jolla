@@ -14,11 +14,14 @@ session = session()
 def index(request):
     return plugins.render('index.html')
 
+
 def chinese(request):
-    if request['data']['ww']=='海贼王':
-        return '海贼王'
-    else:
-        return '支持中文传值'
+    try:
+        if request['data']['ww'] == '海贼王':
+            return 'great anime'
+    except:
+        pass
+    return 'yeah!'
 
 
 def data(request):
@@ -57,7 +60,7 @@ class app(server.WebApp):
         (r'/add', add),
         (r'/get', get),
         (r'/blog', blog),
-        (r'/chinese',chinese)
+        (r'/chinese', chinese)
     ]
 
 if __name__ == '__main__':
