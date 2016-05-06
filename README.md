@@ -11,10 +11,10 @@ version:1.1.0
 
 ## INSTALL
 
-```
-sudo pip install jolla
 
-```
+    sudo pip install jolla
+
+
 
 ##DOCUMENTATION
 
