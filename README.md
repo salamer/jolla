@@ -74,6 +74,10 @@ class app(server.WebApp):
         (r'/blog', blog),
         (r'/chinese',chinese)
     ]
+
+if __name__ == '__main__':
+    server = server.jolla_server(app)
+    server.run_server()
 ```
 
 and then,run:

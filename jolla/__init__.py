@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__version__ = '1.0.2'
 
-from server import *
+from server import WebApp, jolla_server, RouteError, RequestError, RequestValueError
 from plugins import *
 from HTTPerror import *
 from session import *

@@ -8,7 +8,20 @@ from HTTPerror import HTTP404Error
 from server import static_setting
 
 
-def render(filename):
+class HeaderError(Exception):
+
+    def __init__(self):
+        pass
+
+
+class HeaderTupleError(HeaderError):
+
+    def __init__(self):
+        print "<the header must be two tuples>"
+        HeaderError.__init__()
+
+
+def render(filename, extra_header=None):
     if static_setting['templates'][-1] != '/':
         static_setting['templates'] = static_setting['templates'] + '/'
 
@@ -16,19 +29,49 @@ def render(filename):
         with open(os.path.abspath(static_setting['templates'] + filename), "r") as f:
             res = f.read()
 
-        return (res, ('Content-Type', 'text/html'))
+        if not extra_header:
+            return (res, [('Content-Type', 'text/html')])
+        else:
+            if isinstance(extra_header, tuple):
+                if len(extra_header) == 2:
+                    extra_header = [
+                        ('Content-Type', 'text/html'), extra_header]
+                    return (res, extra_header)
+                else:
+                    raise HeaderTupleError
+            elif isinstance(extra_header, list):
+                for header in extra_header:
+                    if len(header) != 2:
+                        raise HeaderTupleError
+                extra_header.append(('Content-Type', 'text/html'))
+                return (res, extra_header)
+            else:
+                raise HeaderTupleError
 
     except IOError:
         print "<NO SUCH FILE>"
         raise HTTP404Error
 
 
-def render_json(data,indent=0):
-    if isinstance(data, dict):
-        return (json.dumps(data,ensure_ascii=False,indent=indent), ('Content-Type', 'application/json'))
+def render_json(data, extra_header=None, indent=0):
+    if not extra_header:
+        return (json.dumps(data, ensure_ascii=False, indent=indent), [('Content-Type', 'application/json')])
     else:
-        print "<the data must be dict>"
-        raise AttributeError
+        if isinstance(extra_header, tuple):
+            if len(extra_header) == 2:
+                extra_header = [
+                    ('Content-Type', 'text/html'), extra_header]
+                return (json.dumps(data, ensure_ascii=False, indent=indent), extra_header)
+            else:
+                raise HeaderTupleError
+        elif isinstance(extra_header, list):
+            for header in extra_header:
+                if len(header) != 2:
+                    raise HeaderTupleError
+            extra_header.append(('Content-Type', 'text/html'))
+            return (json.dumps(data, ensure_ascii=False, indent=indent), extra_header)
+        else:
+            raise HeaderTupleError
 
 
 def render_media(filename):

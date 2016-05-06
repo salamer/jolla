@@ -9,6 +9,7 @@ from gevent.pywsgi import WSGIServer
 import re
 from urllib import unquote
 
+
 static_setting = {
     'templates': r'templates'
 }
@@ -29,6 +30,10 @@ class RouteError(Exception):
             return '<WRONG ROUTE DESIGN>'
         if(self.info == 'query already in request'):
             return "<IT HAS ALREADY IN REQUEST VALUE>"
+        if(self.info == 'not tuple'):
+            return '<URL MUST BE TUPLE OF ROUTE AND HANDLER>'
+        if(self.info == 'not two items'):
+            return '<URL MUST BE TUPLE OF ROUTE AND HANDLER,JUST TWO ITEMS>'
 
 
 class RequestError(Exception):
@@ -96,13 +101,16 @@ class WebApp():
             self.request['query_string'] = {}
 
             line = self._environ['QUERY_STRING']
-            request_data = environ['wsgi.input'].read()
-            if request_data:
-                request_data = unquote(request_data)
-                for data_pair in request_data.split('&'):
-                    key, value = data_pair.split('=')
 
-                    self.request['data'][key] = value
+            if self.request['content_length']:
+                length = int(self.request['content_length'])
+                request_data = environ['wsgi.input'].read(length)
+                if request_data:
+                    request_data = unquote(request_data)
+                    for data_pair in request_data.split('&'):
+                        key, value = data_pair.split('=')
+
+                        self.request['data'][key] = value
 
             query_string = self._environ['QUERY_STRING']
             if query_string:
@@ -117,6 +125,10 @@ class WebApp():
 
         if not get_urls:
             for url in self.urls:
+                if not isinstance(url, tuple):
+                    raise RouteError('not tuple')
+                if len(url) != 2:
+                    raise RouteError('not two items')
                 try:
                     res = self.url_parse(url[0])
                 except RouteError:
@@ -215,18 +227,18 @@ class jolla_server(WSGIServer):
             the_app = self.app(environ)
             html_code = the_app.parse(self.urls)
             if not isinstance(html_code, tuple):
-                html_code = (html_code, ('Content-Type', 'text/html'))
+                html_code = (html_code, [('Content-Type', 'text/html')])
             status = '200 OK'
-        except HTTP404Error:
-            status = '404 NOT FOUND'
-            html_code = ('404 NOT FOUND', ('Content-Type', 'text/html'))
+        except HTTP404Error as e:
+            status = e.error_header
+            html_code = ('404 NOT FOUND', [('Content-Type', 'text/html')])
 
         header = [
             ('Server', 'Jolla/1.0')
         ]
 
-        for i in range(1, len(html_code)):
-            header.append(html_code[i])
+        for header_item in html_code[1]:
+            header.append(header_item)
 
         start_response(status, header)
 
