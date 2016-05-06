@@ -18,6 +18,8 @@ Hope you guys like it.
 
 wanna know more,please click [read more](http://salamer.github.io/jolla)
 
+the Tutorial and documentation is [here](https://github.com/salamer/jolla/wiki)
+
 ## QUICKSTART
 create a `app.py`,and write dowm:
 
