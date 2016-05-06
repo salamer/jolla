@@ -18,7 +18,7 @@ version:1.1.0
 
 ##DOCUMENTATION
 
-wanna know more,please click [doc](http://salamer.github.io/jolla)
+wanna know more,please click [read more](http://salamer.github.io/jolla)
 
 ## QUICKSTART
 create a `app.py`,and write dowm:
