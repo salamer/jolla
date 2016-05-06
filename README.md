@@ -3,11 +3,9 @@
 # Jolla
 jolla is a pure API server framework,and it is based on the gevent.
 
-> still being constrating
+When I wrote Jolla,what I want to do is a high performance API server for you to simply obey its short rule,and get your calculation result fast be sent to browser or mobile for your service.so I made Jolla as simple as possible.
 
-version:1.1.0
-- basic work have done,it's already a api server for api collect.
-- delete the statics function,if you wanna css or js,use cdn or server like nginx and apache httpd;
+Hope you guys like it.
 
 ## INSTALL
 
