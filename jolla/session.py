@@ -23,7 +23,7 @@ class session(buffer):
         return "<class 'jolla_sessionObject'>"
 
     def empty(self):
-        if self._data:
+        if not self._data:
             return True
         else:
             return False
