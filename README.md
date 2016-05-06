@@ -13,10 +13,15 @@ version:1.1.0
 
 ```
 sudo pip install jolla
+
 ```
 
+##DOCUMENTATION
+
+wanna know more,please click [doc](http://salamer.github.io/jolla)
+
 ## QUICKSTART
-add a `app.py`,and write dowm:
+create a `app.py`,and write dowm:
 
 ```
 from jolla import server,SessionError,plugins,session,HTTP404Error
