@@ -9,16 +9,14 @@ Hope you guys like it.
 
 ## INSTALL
 
+```
+sudo pip install jolla
+```
 
-    sudo pip install jolla
-
-
-
-##DOCUMENTATION
-
+## DOCUMENTATION
 wanna know more,please click [read more](http://salamer.github.io/jolla)
 
-the Tutorial and documentation is [here](https://github.com/salamer/jolla/wiki)
+the Tutorial and documentation is [中文版](https://github.com/salamer/jolla/wiki) [English edition](https://github.com/salamer/jolla/wiki/English-Tutorial)
 
 ## QUICKSTART
 create a `app.py`,and write dowm:
@@ -68,6 +66,9 @@ def blog(request):
             session.add_value('name', request['data']['name'])
             return 'ok'
 
+def re_target(request):
+    return plugins.redirect("/data")
+
 
 class app(server.WebApp):
     urls = [
@@ -77,7 +78,8 @@ class app(server.WebApp):
         (r'/add', add),
         (r'/get', get),
         (r'/blog', blog),
-        (r'/chinese',chinese)
+        (r'/chinese',chinese),
+        (r'redirect',re_target)
     ]
 
 if __name__ == '__main__':

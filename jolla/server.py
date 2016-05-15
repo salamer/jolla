@@ -243,7 +243,7 @@ class jolla_server(WSGIServer):
             html_code = ('', [('Location', e.target_url)])
 
         header = [
-            ('Server', 'Jolla/1.0')
+            ('Server', 'Jolla/1.1')
         ]
 
         for header_item in html_code[1]:
