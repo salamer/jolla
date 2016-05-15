@@ -79,7 +79,7 @@ class app(server.WebApp):
         (r'/get', get),
         (r'/blog', blog),
         (r'/chinese',chinese),
-        (r'redirect',re_target)
+        (r'/redirect',re_target)
     ]
 
 if __name__ == '__main__':
