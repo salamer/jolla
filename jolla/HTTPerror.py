@@ -66,3 +66,18 @@ class HTTP400Error(HTTPError):
 
     def __str__(self):
         return "<400 Bad Request>"
+
+
+class HTTP302Error(HTTPError):
+    error_code = 301
+
+    def __init__(self, target_url, info=None):
+        if info:
+            HTTPError.__init__(self, info)
+        else:
+            HTTPError.__init__(self)
+        self.error_header = '302 Found'
+        self.target_url = target_url
+
+    def __str__(self):
+        return "<302 Found>"

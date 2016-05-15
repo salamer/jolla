@@ -4,7 +4,7 @@
 
 import json
 import os
-from HTTPerror import HTTP404Error
+from HTTPerror import HTTP404Error, HTTP302Error
 from server import static_setting
 
 
@@ -92,3 +92,8 @@ def render_media(filename):
 
     except IOError:
         raise HTTP404Error
+
+
+def redirect(path):
+
+    raise HTTP302Error(path)

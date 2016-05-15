@@ -15,7 +15,7 @@ static_setting = {
 }
 
 
-from HTTPerror import HTTP404Error, HTTP403Error, HTTP502Error
+from HTTPerror import HTTP404Error, HTTP403Error, HTTP502Error, HTTP302Error
 
 
 class RouteError(Exception):
@@ -136,7 +136,9 @@ class WebApp():
                     raise HTTP404Error
 
                 if isinstance(res, tuple):
+
                     self._parsed_urls.append((res[0] + '$', url[1], res[1]))
+
                 else:
                     self._parsed_urls.append((res + '$', url[1]))
 
@@ -164,13 +166,15 @@ class WebApp():
                     re_query = re.findall(url_reg, self._path)
                     if re_query[0]:
 
-                        if url_handler[2] in self.request:
-                            raise RouteError("query already in request")
-                        else:
+                        for i in range(len(url_handler[2])):
+                            if url_handler[2][i] in self.request:
+                                raise RouteError("query already in request")
+                            else:
 
-                            self.request[url_handler[2]] = re_query[0]
-                            html_code = url_handler[1](self.request)
-                            return html_code
+                                self.request[url_handler[
+                                    2][i]] = re_query[0][i]
+#                        html_code = url_handler[1](self.request)
+#                        return html_code
 
                 try:
                     html_code = url_handler[1](self.request)
@@ -188,14 +192,16 @@ class WebApp():
         if '<' in path and '>' in path:
             if path.count("<") != path.count(">"):
                 raise RouteError("route error")
-            if path.count("<") > 1:
+            if path.count("<") > 5:
                 raise RouteError("too many re")
 
             reg = re.compile(r'<(\w+)>')
-            url_query = re.findall(reg, path)[0]
-            the_url = path.replace('<' + url_query + '>',
-                                   '(?P<' + url_query + '>\\w+)')
-            return (the_url, url_query)
+            re_list = re.findall(reg, path)
+            the_url = path
+            for url_query in re_list:
+                the_url = the_url.replace(
+                    '<' + url_query + '>', '(?P<' + url_query + '>\\w+)')
+            return (the_url, re_list)
         return path
 
     def get_parsed_urls(self):
@@ -232,6 +238,9 @@ class jolla_server(WSGIServer):
         except HTTP404Error as e:
             status = e.error_header
             html_code = ('404 NOT FOUND', [('Content-Type', 'text/html')])
+        except HTTP302Error as e:
+            status = e.error_header
+            html_code = ('', [('Location', e.target_url)])
 
         header = [
             ('Server', 'Jolla/1.0')
