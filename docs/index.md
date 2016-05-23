@@ -1,6 +1,8 @@
+![pic](http://7xlen8.com1.z0.glb.clouddn.com/JOLLA%281%29.png)
+
 #Welcome to the jolla wiki!
 
-![pic](https://github.com/salamer/jolla/blob/master/pic/JOLLA.png)
+
 
 
 `Jolla` 是一个写于Python2.7的高速API server
@@ -39,8 +41,8 @@
 
 ******
 
-* INSTALL[http://jolla.readthedocs.io/zh/latest/install/]
+* [INSTALL](http://jolla.readthedocs.io/zh/latest/install/)
 
-* TUTORIAL[http://jolla.readthedocs.io/zh/latest/tutorial/]
+* [TUTORIAL](http://jolla.readthedocs.io/zh/latest/tutorial/)
 
 希望你们喜欢，喜欢的话可以点个star哦＝ ＝＋
