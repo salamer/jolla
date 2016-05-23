@@ -1,4 +1,4 @@
-快速开始：
+#快速开始：
 
 首先，你可以创建一个`app.py`的文件
 
@@ -417,6 +417,21 @@ X-Powered-By: PHP 5.4.28
 ******
 ##Session
 
-这时候，我们希望有个对话能持久化我们数据，我们就需要用到`session`了，这里我还是推荐使用诸如`redis`这种来当你的session，不过`Jolla`有自带的 `session` ，这里就不给例子了，它包括 `empty`,`session_count`,`add_value`,`check_value`,`del_value`,`get_value`这几个api可以调用。
+这时候，我们希望有个对话能持久化我们数据，我们就需要用到`session`了，这里我还是推荐使用诸如`redis`这种来当你的session，不过`Jolla`有自带的 `session` ，它包括 `empty`,`session_count`,`add_value`,`check_value`,`del_value`,`get_value`这几个api可以调用。
+
+```
+
+def blog(request):
+    if request['method']=="POST":
+        session.add({'login_username':request['data']['username']})
+        return redirect("/")
+    if request['method']=='GET':
+        if session.check_value(request['data']['username']):
+            return redirect("/loged")
+        else:
+            return redirect("/register")
+
+```
+
 
 好吧，差不多就到这里，希望你们喜欢。
