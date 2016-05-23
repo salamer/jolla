@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
+import logging
 
 class HTTPError(Exception):
     error_code = None
@@ -9,7 +9,7 @@ class HTTPError(Exception):
     def __init__(self, info=None):
         self.info = info
         if self.info:
-            print '<' + self.info + '>'
+            logging.warning('<' + self.info + '>')
 
 
 class HTTP404Error(HTTPError):

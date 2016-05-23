@@ -11,7 +11,7 @@ class buffer(object):
 class SessionError(Exception):
 
     def __str__(self):
-        return "NO SUCH SESSION"
+        return "<NO SUCH SESSION>"
 
 
 class session(buffer):

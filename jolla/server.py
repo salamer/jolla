@@ -8,7 +8,7 @@ monkey.patch_all()
 from gevent.pywsgi import WSGIServer
 import re
 from urllib import unquote
-
+import logging
 
 static_setting = {
     'templates': r'templates'
@@ -21,7 +21,7 @@ from HTTPerror import HTTP404Error, HTTP403Error, HTTP502Error, HTTP302Error
 class RouteError(Exception):
 
     def __init__(self, info=None):
-        print "<" + info + ">"
+        logging.debug("<" + info + ">")
 
     def __str__(self):
         if(self.info == 'too many re'):
@@ -132,7 +132,7 @@ class WebApp():
                 try:
                     res = self.url_parse(url[0])
                 except RouteError:
-                    print "<the route design got some mistakes>"
+                    logging.debug("<the route design got some mistakes>")
                     raise HTTP404Error
 
                 if isinstance(res, tuple):
@@ -182,7 +182,8 @@ class WebApp():
                     html_code = url_handler[1]()
 
                 return html_code
-        raise HTTP404Error('REQUEST NOT FOUND IN ROUTE CONFIGURATION')
+        raise HTTP404Error(
+            'REQUEST %s NOT FOUND IN ROUTE CONFIGURATION' % self._path)
 
     def url_parse(self, path):
 
@@ -210,7 +211,7 @@ class WebApp():
 
 class jolla_server(WSGIServer):
 
-    def __init__(self, app, port=8000, host="127.0.0.1", debug=False):
+    def __init__(self, app, port=8000, host="127.0.0.1", log=None):
         self.port = port
         self.host = host
         self.app = app
@@ -218,8 +219,14 @@ class jolla_server(WSGIServer):
         my_app = self.app(get_urls=False)
         self.urls = my_app.get_parsed_urls()
 
-        WSGIServer.__init__(self, listener=(
-            self.host, self.port), application=self.application)
+        if log:
+            logging.basicConfig(filename=log, level=logging.DEBUG,
+                                format='%(asctime)s %(levelname)s:%(message)s', datefmt="[%m-%d-%Y %H:%M:%S]")
+            WSGIServer.__init__(self, listener=(
+                self.host, self.port), application=self.application, log=logging)
+        else:
+            WSGIServer.__init__(self, listener=(
+                self.host, self.port), application=self.application)
 
     def __str__(self):
         return "<class 'Jolla.jolla_serverObeject'>"
@@ -254,6 +261,6 @@ class jolla_server(WSGIServer):
         return html_code[0]
 
     def run_server(self):
-        print "the server is running on the {} in the port {}".format(self.host, self.port)
+        print "the jolla server is running on the {} in the port {}".format(self.host, self.port)
 
         self.serve_forever()

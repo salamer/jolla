@@ -6,6 +6,7 @@ import json
 import os
 from HTTPerror import HTTP404Error, HTTP302Error
 from server import static_setting
+import logging
 
 
 class HeaderError(Exception):
@@ -17,7 +18,7 @@ class HeaderError(Exception):
 class HeaderTupleError(HeaderError):
 
     def __init__(self):
-        print "<the header must be two tuples>"
+        logging.debug("<the header must be two tuples>")
         HeaderError.__init__()
 
 
@@ -49,7 +50,7 @@ def render(filename, extra_header=None):
                 raise HeaderTupleError
 
     except IOError:
-        print "<NO SUCH FILE>"
+        logging.warning("<NO FILE %s>" % filename)
         raise HTTP404Error
 
 
