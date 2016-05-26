@@ -211,9 +211,16 @@ class WebApp():
 
 class jolla_server(WSGIServer):
 
-    def __init__(self, app, port=8000, host="127.0.0.1", log=None):
-        self.port = port
-        self.host = host
+    def __init__(self, app, listener=None, log=None):
+        if not listener:
+            self.listener = ("127.0.0.1", 8000)
+            self.host = "127.0.0.1"
+            self.port = 8000
+        else:
+            self.listener = listener
+            self.host = None
+            self.port = None
+
         self.app = app
 
         my_app = self.app(get_urls=False)
@@ -222,11 +229,11 @@ class jolla_server(WSGIServer):
         if log:
             logging.basicConfig(filename=log, level=logging.DEBUG,
                                 format='%(asctime)s %(levelname)s:%(message)s', datefmt="[%m-%d-%Y %H:%M:%S]")
-            WSGIServer.__init__(self, listener=(
-                self.host, self.port), application=self.application, log=logging)
+            WSGIServer.__init__(self, listener=self.listener,
+                                application=self.application, log=logging)
         else:
-            WSGIServer.__init__(self, listener=(
-                self.host, self.port), application=self.application)
+            WSGIServer.__init__(self, listener=self.listener,
+                                application=self.application)
 
     def __str__(self):
         return "<class 'Jolla.jolla_serverObeject'>"
@@ -261,6 +268,10 @@ class jolla_server(WSGIServer):
         return html_code[0]
 
     def run_server(self):
-        print "the jolla server is running on the {} in the port {}".format(self.host, self.port)
+        if self.host:
+            print "the jolla server is running on the {} in the port {}".format(self.host, self.port)
+        else:
+            if isinstance(self.listener,tuple):
+                print "the jolla server is running on the {} in the port {}".format(self.listener[0], self.listener[1])
 
         self.serve_forever()
