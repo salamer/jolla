@@ -434,7 +434,7 @@ def blog(request):
 ```
 
 ******
-##logging
+##部署（logging与host和port）
 
 有时，我们希望能把很多链接打成log用于生产环境下，那么怎么在`jolla`中把log打在一个文件中呢？
 
@@ -459,6 +459,15 @@ if __name__ == "__main__":
 [05-26-2016 14:15:02] INFO:127.0.0.1 - - [2016-05-26 14:15:02] "GET /qq HTTP/1.1" 404 140 0.000875
 
 ```
+对于部署，我们肯定不是在本地的`localhost`运行，这个也很简单，在`jolla`的`server`里面内置了个`listener`，可以把`host`和`port`给他就可以了
+
+```
+if __name__ == "__main__":
+    server = jolla_server(app,log="errer.log",listener=("xx.xx.xx.xx",80))
+    server.run_server()
+```
+这样，我们的`jolla server`就运行在了`xx.xx.xx.xx:80`上面了 
+
 ******
 ##多进程
 
@@ -502,6 +511,8 @@ if __name__ == '__main__':
 ```
 
 这样，就能很好的使用多进程了，我在我的mac上测试，用了3核效率是单核的2倍左右。
+
+
 
 
 好吧，差不多就到这里，希望你们喜欢。
