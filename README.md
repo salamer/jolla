@@ -10,10 +10,10 @@ Hope you guys like it.
 ## INSTALL
 
 ```
-sudo pip install jolla
+pip install jolla
 ```
 
-## DOCUMENTATION
+## DOCUMENT
 wanna know more,please click [read more](http://salamer.github.io/jolla)
 
 the Tutorial and documentation is [中文版](http://jolla.readthedocs.io/zh/latest/) [English edition](https://github.com/salamer/jolla/wiki/English-Tutorial)
