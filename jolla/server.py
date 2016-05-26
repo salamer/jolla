@@ -171,8 +171,7 @@ class WebApp():
                                 raise RouteError("query already in request")
                             else:
 
-                                self.request[url_handler[
-                                    2][i]] = re_query[0][i]
+                                self.request[url_handler[2][i]] = re_query[0][i]
 #                        html_code = url_handler[1](self.request)
 #                        return html_code
 
