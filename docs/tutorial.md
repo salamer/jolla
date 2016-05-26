@@ -433,5 +433,75 @@ def blog(request):
 
 ```
 
+******
+##logging
+
+有时，我们希望能把很多链接打成log用于生产环境下，那么怎么在`jolla`中把log打在一个文件中呢？
+
+只需在`server_run`这个，加上一个参数：
+
+```
+if __name__ == "__main__":
+    server = jolla_server(app,log="errer.log")
+    server.run_server()
+```
+
+这样，我们跑我们的程序，之后在`error.log`就可以看到我们的生产log了。
+
+如我们在终端输入： tail error.log
+
+可以看到：
+
+```
+[05-26-2016 14:14:55] INFO:127.0.0.1 - - [2016-05-26 14:14:55] "GET / HTTP/1.1" 200 214 0.001587
+[05-26-2016 14:14:58] INFO:127.0.0.1 - - [2016-05-26 14:14:58] "GET / HTTP/1.1" 200 214 0.002000
+[05-26-2016 14:15:02] WARNING:<REQUEST /qq/ NOT FOUND IN ROUTE CONFIGURATION>
+[05-26-2016 14:15:02] INFO:127.0.0.1 - - [2016-05-26 14:15:02] "GET /qq HTTP/1.1" 404 140 0.000875
+
+```
+******
+##多进程
+
+现在基本都是多核处理器，能好好的使用好多核的性能的人才是王者，`jolla`当然也加入了多进程的使用方法，使用`python`内置的`multiprocessing`做多进程
+
+> 这里提醒一下，跑的进程数最好是自己电脑的核数
+
+```
+
+from jolla import SessionError,HTTP404Error,session,plugins,plugins
+from gevent.server import _tcp_listener
+from multiprocessing import Process, current_process, cpu_count
+
+session = session()
+
+
+def index(request):
+
+    return plugins.render('indexwww.html',extra_header=[('Vary','Accept-Encoding'),('X-Powered-By','PHP 5.4.28')])
+
+def say(request):
+
+    return plugins.render_json({'qqq':{'www':'哈哈哈'}},indent=4)
+
+
+class app(server.WebApp):
+    urls = [
+        (r'/', index),
+        (r'/data', say)
+    ]
+listener = _tcp_listener(('127.0.0.1', 8001))
+
+def serve_forever(listener):
+    server.jolla_server(listener=listener, app=app).run_server()
+
+if __name__ == '__main__':
+    number_of_processes = 4
+    print 'Starting %s processes' % number_of_processes
+    for i in range(number_of_processes):
+        Process(target=serve_forever, args=(listener,)).start()
+```
+
+这样，就能很好的使用多进程了，我在我的mac上测试，用了3核效率是单核的2倍左右。
+
 
 好吧，差不多就到这里，希望你们喜欢。
