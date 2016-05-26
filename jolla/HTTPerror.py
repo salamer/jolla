@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
+
 class HTTPError(Exception):
     error_code = None
     value = ''

@@ -6,7 +6,7 @@ import ast
 setup(
     name='jolla',
     keywords=['back-end', 'framework', 'RESTful', 'gevent'],
-    version='1.1.9',
+    version='1.1.10',
     description='high performance RESTful framework',
     author='aljun',
     author_email='salamer_gaga@163.com',

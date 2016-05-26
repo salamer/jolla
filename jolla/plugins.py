@@ -18,7 +18,8 @@ class HeaderError(Exception):
 class HeaderTupleError(HeaderError):
 
     def __init__(self):
-        logging.debug("<the header must be two tuples>")
+        logging
+.debug("<the header must be two tuples>")
         HeaderError.__init__()
 
 

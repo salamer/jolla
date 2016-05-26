@@ -271,7 +271,7 @@ class jolla_server(WSGIServer):
         if self.host:
             print "the jolla server is running on the {} in the port {}".format(self.host, self.port)
         else:
-            if isinstance(self.listener,tuple):
+            if isinstance(self.listener, tuple):
                 print "the jolla server is running on the {} in the port {}".format(self.listener[0], self.listener[1])
 
         self.serve_forever()
