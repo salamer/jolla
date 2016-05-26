@@ -16,7 +16,7 @@ pip install jolla
 ## DOCUMENT
 wanna know more,please click [read more](http://salamer.github.io/jolla)
 
-the Tutorial and documentation is [中文版](http://jolla.readthedocs.io/zh/latest/) [English edition](http://jolla-english.readthedocs.io/en/latest/Tutorial/)
+the Tutorial and documentation is [中文版](http://jolla.readthedocs.io/zh/latest/) [English edition](http://jolla-english.readthedocs.io/en/latest/)
 
 ## QUICKSTART
 create a `app.py`,and write dowm:
