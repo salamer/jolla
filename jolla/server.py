@@ -171,7 +171,8 @@ class WebApp():
                                 raise RouteError("query already in request")
                             else:
 
-                                self.request[url_handler[2][i]] = re_query[0][i]
+                                self.request[url_handler[
+                                    2][i]] = re_query[0][i]
 #                        html_code = url_handler[1](self.request)
 #                        return html_code
 
@@ -187,6 +188,7 @@ class WebApp():
     def url_parse(self, path):
 
         path = path.replace(' ', '')
+        path = path.replace("_", "-")
         if path[-1] != '/':
             path = path + '/'
         if '<' in path and '>' in path:
@@ -195,12 +197,13 @@ class WebApp():
             if path.count("<") > 5:
                 raise RouteError("too many re")
 
-            reg = re.compile(r'<(\w+)>')
+            reg = re.compile(r'<([a-z0-9A-Z-_]+)>')
             re_list = re.findall(reg, path)
             the_url = path
             for url_query in re_list:
                 the_url = the_url.replace(
-                    '<' + url_query + '>', '(?P<' + url_query + '>\\w+)')
+                    '<' + url_query + '>', '(?P<' + url_query + '>[a-z0-9A-Z-]+)')
+
             return (the_url, re_list)
         return path
 
